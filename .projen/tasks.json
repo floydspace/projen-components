@@ -155,6 +155,15 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
+    "preinstall": {
+      "name": "preinstall",
+      "description": "asserts the correct package manager is used",
+      "steps": [
+        {
+          "exec": "npx only-allow yarn"
+        }
+      ]
+    },
     "prepare": {
       "name": "prepare",
       "description": "installs husky",

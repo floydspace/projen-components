@@ -39,9 +39,10 @@ export class CSpell extends Component {
         const words = [
           "projen",
           "projenrc",
-          "mountainpass",
+          "floydspace",
           "docgen",
           "unbump",
+          "preinstall",
           "lcov",
           "cobertura",
         ];

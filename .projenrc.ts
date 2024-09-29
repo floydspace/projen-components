@@ -9,12 +9,12 @@ import {
 } from "./src";
 
 const gitHubber = new GitHubber({
-  name: "cool-bits-for-projen",
-  username: "mountain-pass",
+  name: "projen-components",
+  username: "floydspace",
 });
 
 const npmReleaser = new NpmReleaser(gitHubber, {
-  scope: "mountainpass",
+  scope: "floydspace",
   access: NpmAccess.PUBLIC,
   release: true,
 });
