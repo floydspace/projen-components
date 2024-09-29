@@ -54,6 +54,7 @@ export class EslintUnicorn extends Component {
       project.eslint.addExtends("plugin:unicorn/recommended");
       project.eslint.addRules({
         "unicorn/prefer-node-protocol": "off",
+        "unicorn/expiring-todo-comments": "off",
       });
       project.eslint.addOverride({
         files: [".projenrc.js", ".projenrc.ts"],
