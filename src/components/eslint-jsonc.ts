@@ -4,9 +4,9 @@ import {
   TypeScriptProject,
   TypeScriptProjectOptions,
 } from "projen/lib/typescript";
+import { VscodeSettings } from "./vscode-settings";
 import { DeepRequired } from "../util/deep-required";
 import { Dynamic, resolve } from "../util/dynamic";
-import { VscodeSettings } from "./vscode-settings";
 
 /**
  * option to enable or disable jsonC in eslint

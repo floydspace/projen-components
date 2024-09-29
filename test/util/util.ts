@@ -74,11 +74,13 @@ function directorySnapshot(root: string) {
         continue;
       }
 
-      let content;
-      content =
-        path.extname(filePath) === ".json"
-          ? fs.readJsonSync(filePath)
-          : fs.readFileSync(filePath, "utf8");
+      let content = fs.readFileSync(filePath, "utf8");
+      if (path.extname(filePath) === ".json") {
+        if (content.startsWith("//")) {
+          content = content.substring(content.indexOf("\n") + 1);
+        }
+        content = JSON.parse(content);
+      }
 
       output[relativePath] = content;
     }

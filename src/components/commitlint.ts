@@ -1,11 +1,11 @@
 import { UserConfig } from "@commitlint/types";
 import { Component, JsonFile } from "projen";
 import { NodeProject } from "projen/lib/javascript";
-import { DeepRequired } from "../util/deep-required";
-import { Dynamic, resolve } from "../util/dynamic";
 import { CSpell } from "./cspell";
 import { Husky } from "./husky";
 import { VscodeExtensionRecommendations } from "./vscode-extension-recommendations";
+import { DeepRequired } from "../util/deep-required";
+import { Dynamic, resolve } from "../util/dynamic";
 
 /**
  * option to enable or disable commitlint

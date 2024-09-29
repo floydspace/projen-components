@@ -3,9 +3,9 @@ import { Component } from "projen";
 import { NodeProject } from "projen/lib/javascript";
 import * as shell from "shelljs";
 import "shelljs-plugin-authors";
+import { Entity } from "./organisational";
 import { DeepRequired } from "../util/deep-required";
 import { Dynamic, resolve } from "../util/dynamic";
-import { Entity } from "./organisational";
 /**
  * Contributors options
  */

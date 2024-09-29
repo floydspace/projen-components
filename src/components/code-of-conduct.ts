@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-module */
 import * as fs from "fs-extra";
 import { FileBase, FileBaseOptions, Project } from "projen";
 import { CSpell } from "./cspell";

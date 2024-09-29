@@ -1,6 +1,6 @@
 import { Project } from "projen";
-import { PseudoComponent } from "../../src";
 import { mkdtemp } from "./util";
+import { PseudoComponent } from "../../src";
 
 /**
  * just testing

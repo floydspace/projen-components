@@ -1,7 +1,7 @@
 import { JsiiProjectOptions } from "projen/lib/cdk";
 import { NodeProject, NodeProjectOptions } from "projen/lib/javascript";
-import { PseudoComponent } from "../util/pseudo-component";
 import { CSpell } from "./cspell";
+import { PseudoComponent } from "../util/pseudo-component";
 
 /**
  * GitHubber options

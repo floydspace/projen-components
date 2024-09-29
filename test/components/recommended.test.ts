@@ -14,7 +14,7 @@ test("unicorn, husky, eslint-prettier-fixer, etc are added to the project", () =
 
   expect(project.eslint).not.toBeUndefined();
   expect(project.prettier).not.toBeUndefined();
-  expect(snapshot["package.json"].devDependencies).toHaveProperty(
+  expect(snapshot["package.json"].devDependencies).not.toHaveProperty(
     "eslint-plugin-unicorn"
   );
   expect(snapshot["package.json"].devDependencies).toHaveProperty(

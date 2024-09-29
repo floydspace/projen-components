@@ -4,9 +4,9 @@ import {
   TypeScriptProject,
   TypeScriptProjectOptions,
 } from "projen/lib/typescript";
+import { EslintJsonC } from "./eslint-jsonc";
 import { DeepRequired } from "../util/deep-required";
 import { Dynamic, resolve } from "../util/dynamic";
-import { EslintJsonC } from "./eslint-jsonc";
 
 /**
  * option to enable or disable noSecrets in eslint

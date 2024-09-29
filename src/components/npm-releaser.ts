@@ -3,8 +3,8 @@ import {
   NodeProjectOptions,
   NpmAccess,
 } from "projen/lib/javascript";
-import { PseudoComponent } from "../util/pseudo-component";
 import { GitHubber } from "./git-hubber";
+import { PseudoComponent } from "../util/pseudo-component";
 
 /**
  * NpmReleaser options

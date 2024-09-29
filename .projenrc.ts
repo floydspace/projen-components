@@ -33,8 +33,9 @@ const project = new TypeScriptProject({
   ...npmReleaser.nodeProjectOptions(),
   ...Recommended.defaultProjectOptions,
   description: "A collection of cool projen components",
-  typescriptVersion: "4.7.4",
+  typescriptVersion: "5.5.4",
   peerDeps: ["projen@>0.58.15"],
+  peerDependencyOptions: { pinnedDevDependency: false },
   bundledDeps: [
     "merge",
     "traverse",
@@ -89,6 +90,7 @@ const project = new TypeScriptProject({
     labels: ["auto-approve"],
   },
   jestOptions: {
+    configFilePath: "jest.config.json",
     jestConfig: {
       coverageThreshold: {
         branches: 100,

@@ -2,7 +2,6 @@ import { Component, Project } from "projen";
 import { NodeProject } from "projen/lib/javascript";
 import { TypeScriptProject } from "projen/lib/typescript";
 import { CSpellOptions } from "..";
-import { Dynamic } from "../util/dynamic";
 import { Commitlint, CommitlintOptions } from "./commitlint";
 import { Contributors, ContributorsOptions } from "./contributors";
 import { CSpell } from "./cspell";
@@ -14,7 +13,7 @@ import {
   EslintPrettierFixer,
   EslintPrettierFixerOptions,
 } from "./eslint-prettier-fixer";
-import { EslintUnicorn, EslintUnicornOptions } from "./eslint-unicorn";
+import { EslintUnicornOptions } from "./eslint-unicorn";
 import { Husky, HuskyOptions } from "./husky";
 import { OnlyAllow } from "./only-allow";
 import {
@@ -22,6 +21,7 @@ import {
   VscodeExtensionRecommendationsOptions,
 } from "./vscode-extension-recommendations";
 import { VscodeSettings, VscodeSettingsOptions } from "./vscode-settings";
+import { Dynamic } from "../util/dynamic";
 
 /**
  * option to enable or disable unicorn in eslint
@@ -48,7 +48,7 @@ export type RecommendedOptions = Dynamic<
 export class Recommended extends Component {
   static defaultProjectOptions = {
     ...EslintPrettierFixer.defaultProjectOptions,
-    ...EslintUnicorn.defaultProjectOptions,
+    // ...EslintUnicorn.defaultProjectOptions,
     ...EslintJsdoc.defaultProjectOptions,
     ...EslintNoSecrets.defaultProjectOptions,
     ...EslintJsonC.defaultProjectOptions,
@@ -56,7 +56,7 @@ export class Recommended extends Component {
   };
   static defaultOptions: RecommendedOptions = {
     ...EslintPrettierFixer.defaultOptions,
-    ...EslintUnicorn.defaultOptions,
+    // ...EslintUnicorn.defaultOptions,
     ...Husky.defaultOptions,
     ...Commitlint.defaultOptions,
     ...VscodeExtensionRecommendations.defaultOptions,
@@ -69,7 +69,7 @@ export class Recommended extends Component {
     ...EslintIgnore.defaultOptions,
   };
   eslintPrettier: EslintPrettierFixer;
-  eslintUnicorn: EslintUnicorn;
+  // eslintUnicorn: EslintUnicorn;
   husky: Husky;
   commitlint: Commitlint;
   vscodeExtensionRecommendations: VscodeExtensionRecommendations;
@@ -94,7 +94,7 @@ export class Recommended extends Component {
     this.commitlint = new Commitlint(project, options);
     this.eslintPrettier = new EslintPrettierFixer(project, options);
     this.eslintIgnore = new EslintIgnore(project, options);
-    this.eslintUnicorn = new EslintUnicorn(project, options);
+    // this.eslintUnicorn = new EslintUnicorn(project, options);
     this.eslintJsdoc = new EslintJsdoc(project, options);
     this.eslintJsonC = new EslintJsonC(project, options);
     this.eslintNoSecrets = new EslintNoSecrets(project, options);

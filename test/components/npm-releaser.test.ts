@@ -16,7 +16,8 @@ test("just the name", () => {
   const snapshot = synthSnapshot(project);
 
   expect(snapshot["package.json"].name).toEqual("test-project");
-  expect(snapshot["package.json"].publishConfig).toBeUndefined();
+  expect(snapshot["package.json"].publishConfig.access).toEqual("public");
+  expect(snapshot["package.json"].publishConfig.registry).toBeUndefined();
 });
 
 test("set all the things", () => {

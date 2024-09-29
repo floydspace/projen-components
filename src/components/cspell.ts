@@ -2,9 +2,9 @@ import { CSpellSettings } from "@cspell/cspell-types";
 import { Component, JsonFile, SampleFile } from "projen";
 import { JsiiProject } from "projen/lib/cdk";
 import { NodeProject } from "projen/lib/javascript";
-import { Dynamic, resolve } from "../util/dynamic";
 import { Husky } from "./husky";
 import { VscodeExtensionRecommendations } from "./vscode-extension-recommendations";
+import { Dynamic, resolve } from "../util/dynamic";
 /**
  * option to enable or disable cSpell and cSpell options
  */
