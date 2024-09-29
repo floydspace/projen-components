@@ -137,6 +137,7 @@ export class CSpell extends Component {
       this.options.cSpellOptions.ignorePaths = [
         ...(this.options.cSpellOptions.ignorePaths || []),
         ...this.project.files.map((file) => file.path),
+        (this.project as NodeProject).package.lockFile,
         ".cspell.json",
       ];
       this.cSpellConfigFile = new JsonFile(this.project, ".cspell.json", {

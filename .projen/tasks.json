@@ -169,7 +169,7 @@
       "description": "installs husky",
       "steps": [
         {
-          "exec": "husky install"
+          "exec": "husky"
         }
       ]
     },

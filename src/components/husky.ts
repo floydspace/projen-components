@@ -112,7 +112,7 @@ export class Husky extends Component {
     if (this.options.husky) {
       project.addDevDeps("husky");
       project.addTask("prepare", {
-        exec: "husky install",
+        exec: "husky",
         description: "installs husky",
       });
     }
@@ -130,11 +130,7 @@ export class Husky extends Component {
           this.hooks[hookName as HuskyHook] = new TextFile(
             this.project,
             `.husky/${hookName}`,
-            {
-              lines: ["#!/bin/sh", '. "$(dirname "$0")/_/husky.sh"', ...hooks],
-              executable: true,
-              marker: true,
-            }
+            { lines: [...hooks], marker: true }
           );
         }
       }
