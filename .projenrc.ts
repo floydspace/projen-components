@@ -1,4 +1,4 @@
-import { NpmAccess } from "projen/lib/javascript";
+import { NodePackageManager, NpmAccess } from "projen/lib/javascript";
 import { TypeScriptProject } from "projen/lib/typescript";
 import {
   Recommended,
@@ -57,7 +57,7 @@ const project = new TypeScriptProject({
     "typescript",
     "projen",
     "projen-component",
-    "projen-component",
+    "projen-components",
     "cspell",
     "eslint-jsdoc",
     "prettier",
@@ -66,6 +66,7 @@ const project = new TypeScriptProject({
     "vscode-extension-recommendations",
   ],
   defaultReleaseBranch: "main",
+  packageManager: NodePackageManager.PNPM,
   tsconfig: {
     compilerOptions: {
       esModuleInterop: true,

@@ -160,7 +160,7 @@
       "description": "asserts the correct package manager is used",
       "steps": [
         {
-          "exec": "npx only-allow yarn"
+          "exec": "npx only-allow pnpm"
         }
       ]
     },
