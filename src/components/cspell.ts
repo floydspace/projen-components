@@ -1,5 +1,5 @@
 import { CSpellSettings } from "@cspell/cspell-types";
-import { Component, JsonFile, SampleFile } from "projen";
+import { Component, JsonFile, Project, SampleFile } from "projen";
 import { JsiiProject } from "projen/lib/cdk";
 import { NodeProject } from "projen/lib/javascript";
 import { Husky } from "./husky";
@@ -45,6 +45,7 @@ export class CSpell extends Component {
           "preinstall",
           "lcov",
           "cobertura",
+          "npmignore",
         ];
         if (project instanceof JsiiProject) {
           words.push("compat", "jsii");
@@ -61,6 +62,17 @@ export class CSpell extends Component {
       dictionaries: ["project-words"],
     },
   };
+
+  /**
+   * Retrieves the CSpell component from the given project, if it exists.
+   *
+   * @param project - The project to search for the CSpell component.
+   * @returns The CSpell component if found, otherwise undefined.
+   */
+  public static of(project: Project): CSpell | undefined {
+    const isCSpell = (o: Component): o is CSpell => o instanceof CSpell;
+    return project.components.find(isCSpell);
+  }
 
   options: RequiredCSpellOptions;
   cSpellConfigFile?: JsonFile;

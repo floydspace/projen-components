@@ -139,6 +139,10 @@ new Recommended(project, {
         filename: "code-of-conduct-text/contributor-covenant-2.1.md",
         words: ["socio-economic"],
       },
+      {
+        filename: [".projenrc.ts", "src/components/vitest.ts"],
+        words: ["vitest", "unannotate"],
+      },
     ],
   },
 });

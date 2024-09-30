@@ -42,6 +42,23 @@ export class VscodeExtensionRecommendations extends Component {
       return { recommendations };
     },
   };
+
+  /**
+   * Retrieves the VscodeExtensionRecommendations instance from the project if it exists.
+   *
+   * @param project - The project to search for the VscodeExtensionRecommendations component.
+   * @returns The VscodeExtensionRecommendations instance or undefined if not found.
+   */
+  public static of(
+    project: Project
+  ): VscodeExtensionRecommendations | undefined {
+    const isVscodeExtensionRecommendations = (
+      o: Component
+    ): o is VscodeExtensionRecommendations =>
+      o instanceof VscodeExtensionRecommendations;
+    return project.components.find(isVscodeExtensionRecommendations);
+  }
+
   options: DeepRequired<VscodeExtensionRecommendationsOptions>;
   extensionsRecommendationsFile?: JsonFile;
   /**
