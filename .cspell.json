@@ -26,7 +26,6 @@
     "eslint",
     "husky",
     "jest-junit",
-    "only-allow",
     "prettier",
     "projen",
     "ts-jest",

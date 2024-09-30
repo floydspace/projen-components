@@ -15,7 +15,6 @@ import {
 } from "./eslint-prettier-fixer";
 import { EslintUnicornOptions } from "./eslint-unicorn";
 import { Husky, HuskyOptions } from "./husky";
-import { OnlyAllow } from "./only-allow";
 import {
   VscodeExtensionRecommendations,
   VscodeExtensionRecommendationsOptions,
@@ -80,7 +79,6 @@ export class Recommended extends Component {
   eslintJsonC: EslintJsonC;
   vscodeSettings: VscodeSettings;
   eslintIgnore: EslintIgnore;
-  onlyAllow: OnlyAllow;
   /**
    * adds MountainPass recommended settings to the project
    *
@@ -104,7 +102,6 @@ export class Recommended extends Component {
       options
     );
     this.husky = new Husky(project, options);
-    this.onlyAllow = new OnlyAllow(project);
   }
 }
 

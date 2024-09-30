@@ -104,10 +104,6 @@
       "type": "build"
     },
     {
-      "name": "only-allow",
-      "type": "build"
-    },
-    {
       "name": "prettier",
       "type": "build"
     },
