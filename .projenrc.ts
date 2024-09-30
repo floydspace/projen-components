@@ -68,6 +68,7 @@ const project = new TypeScriptProject({
   ],
   defaultReleaseBranch: "main",
   packageManager: NodePackageManager.PNPM,
+  pnpmVersion: "8",
   tsconfig: {
     compilerOptions: {
       esModuleInterop: true,
@@ -147,5 +148,6 @@ npmReleaser.addToProject(project);
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
 project.addGitIgnore("/docs");
+project.package.addEngine("pnpm", ">=8 <9");
 
 project.synth();

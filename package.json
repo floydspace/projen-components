@@ -107,6 +107,9 @@
     "typescript",
     "vscode-extension-recommendations"
   ],
+  "engines": {
+    "pnpm": ">=8 <9"
+  },
   "main": "lib/index.js",
   "license": "Apache-2.0",
   "homepage": "https://github.com/floydspace/projen-components",
