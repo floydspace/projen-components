@@ -144,5 +144,8 @@ new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
 project.addGitIgnore("/docs");
 project.package.addEngine("pnpm", ">=8 <9");
+// pnpm requires using hoisted node_modules when `bundledDependencies` are used
+// see here https://pnpm.io/next/npmrc#node-linker
+project.npmrc.addConfig("node-linker", "hoisted");
 
 project.synth();
