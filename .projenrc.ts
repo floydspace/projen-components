@@ -6,6 +6,7 @@ import {
   CodeOfConduct,
   GitHubber,
   NpmReleaser,
+  Changesets,
 } from "./src";
 
 const gitHubber = new GitHubber({
@@ -74,6 +75,8 @@ const project = new TypeScriptProject({
       esModuleInterop: true,
     },
   },
+  release: false,
+  releaseToNpm: false,
   projenrcTs: true,
   license: "Apache-2.0",
   codeCov: true,
@@ -141,6 +144,11 @@ gitHubber.addToProject(project);
 npmReleaser.addToProject(project);
 
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
+
+new Changesets(project, {
+  repo: `${gitHubber.options.username}/${gitHubber.options.name}`,
+  onlyUpdatePeerDependentsWhenOutOfRange: true,
+});
 
 project.addGitIgnore("/docs");
 project.package.addEngine("pnpm", ">=8 <9");

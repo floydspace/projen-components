@@ -1,5 +1,6 @@
 {
   "files": [
+    ".changeset/config.json",
     ".commitlintrc.json",
     ".cspell.json",
     ".eslintignore",

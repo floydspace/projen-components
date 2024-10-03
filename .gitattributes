@@ -2,6 +2,7 @@
 
 * text=auto eol=lf
 *.snap linguist-generated
+/.changeset/config.json linguist-generated
 /.commitlintrc.json linguist-generated
 /.cspell.json linguist-generated
 /.eslintignore linguist-generated

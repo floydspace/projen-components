@@ -36,9 +36,6 @@ junit.xml
 !/jest.config.json
 /coverage/
 !/.github/workflows/build.yml
-/dist/changelog.md
-/dist/version.txt
-!/.github/workflows/release.yml
 !/.mergify.yml
 !/.github/dependabot.yml
 !/.github/pull_request_template.md
@@ -56,6 +53,8 @@ junit.xml
 !/.eslintignore
 !/.eslintrc-json.json
 !/CODE_OF_CONDUCT.md
+!/.changeset/config.json
+!/.github/workflows/release.yml
 /docs
 !/.projenrc.ts
 !/.cspell.json
