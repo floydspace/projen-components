@@ -183,6 +183,7 @@ export class Changesets extends Component {
                 with: {
                   version: "pnpm bump",
                   publish: "pnpm changeset publish",
+                  commit: "chore(release): version packages",
                 },
                 env: {
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
