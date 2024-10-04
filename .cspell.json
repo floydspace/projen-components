@@ -26,6 +26,7 @@
     "eslint-plugin-prettier",
     "eslint",
     "husky",
+    "is-ci",
     "jest-junit",
     "prettier",
     "projen",

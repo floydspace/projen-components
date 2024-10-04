@@ -98,6 +98,10 @@
       "type": "build"
     },
     {
+      "name": "is-ci",
+      "type": "build"
+    },
+    {
       "name": "jest",
       "type": "build"
     },

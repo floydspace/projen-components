@@ -183,7 +183,7 @@
       "description": "installs husky",
       "steps": [
         {
-          "exec": "husky"
+          "exec": "is-ci || husky"
         }
       ]
     },
