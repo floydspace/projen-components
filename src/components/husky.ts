@@ -116,6 +116,7 @@ export class Husky extends Component {
         description: "installs husky",
       });
     }
+    project.addPackageIgnore("/.husky/");
   }
 
   /**

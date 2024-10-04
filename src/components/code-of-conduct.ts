@@ -33,6 +33,7 @@ export class CodeOfConduct extends FileBase {
     let text = fs.readFileSync(textFile, "utf8");
     text = text.replace("[INSERT CONTACT METHOD]", options.contactMethod);
     this.text = text;
+    project.addPackageIgnore("/code-of-conduct-text/");
   }
 
   /**

@@ -139,6 +139,8 @@ export class Changesets extends Component {
       omitEmpty: true,
     });
 
+    project.addPackageIgnore("/.changeset/");
+
     new YamlFile(project, ".github/workflows/release.yml", {
       obj: {
         name: "release",

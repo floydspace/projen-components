@@ -22,6 +22,9 @@ dist
 /.projenrc.js
 tsconfig.tsbuildinfo
 /.eslintrc.json
+/.husky/
+/code-of-conduct-text/
+/.changeset/
 /.gitattributes
 /.projenrc.ts
 /projenrc
