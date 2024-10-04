@@ -175,7 +175,7 @@ export class Changesets extends Component {
               },
               {
                 name: "Prepare Changeset",
-                run: "pnpm changeset pre ${{ github.ref == 'refs/heads/main' && 'exit' || 'enter next' }}",
+                run: "pnpm changeset pre ${{ github.ref == 'refs/heads/main' && 'exit' || 'enter next' }} || echo 'swallow'",
               },
               {
                 name: "Create Release Pull Request or Publish",
