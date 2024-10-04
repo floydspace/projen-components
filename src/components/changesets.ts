@@ -144,6 +144,7 @@ export class Changesets extends Component {
         jobs: {
           release: {
             "runs-on": "ubuntu-latest",
+            permissions: { "id-token": "write" },
             steps: [
               {
                 name: "Checkout",
