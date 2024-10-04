@@ -207,6 +207,7 @@ export class Changesets extends Component {
                 uses: "changesets/action@v1",
                 with: {
                   version: "pnpm bump",
+                  publish: "pnpm changeset publish",
                   commit: "chore(release): version packages",
                 },
                 env: {
