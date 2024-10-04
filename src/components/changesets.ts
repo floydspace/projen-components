@@ -129,7 +129,7 @@ export class Changesets extends Component {
 
     new JsonFile(project, ".changeset/config.json", {
       obj: {
-        $schema: "https://unpkg.com/@changesets/config@2.3.1/schema.json",
+        $schema: "https://unpkg.com/@changesets/config@3.0.3/schema.json",
         changelog: ["@changesets/changelog-github", { repo: options.repo }],
         commit: false,
         fixed: [],
@@ -190,18 +190,23 @@ export class Changesets extends Component {
                 run: "pnpm i --frozen-lockfile",
               },
               { name: "Build", run: "pnpm build" },
-              {
-                name: "Upload coverage to Codecov",
-                uses: "codecov/codecov-action@v4",
-                with: { directory: "coverage" },
-                env: {
-                  CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}",
-                },
-              },
-              {
-                name: "Prepare Changeset",
-                run: `pnpm changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
-              },
+              ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
+              // {
+              //   name: "Upload coverage to Codecov",
+              //   uses: "codecov/codecov-action@v4",
+              //   with: {
+              //     token: "${{ secrets.CODECOV_TOKEN }}",
+              //     directory: "coverage",
+              //   },
+              // },
+              ...(options.prereleaseBranches?.length
+                ? [
+                    {
+                      name: "Prepare Changeset",
+                      run: `pnpm changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
+                    },
+                  ]
+                : []),
               {
                 name: "Create Release Pull Request or Publish",
                 uses: "changesets/action@v1",

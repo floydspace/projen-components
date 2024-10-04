@@ -80,6 +80,7 @@ const project = new TypeScriptProject({
   projenrcTs: true,
   license: "Apache-2.0",
   codeCov: true,
+  codeCovTokenSecret: "CODECOV_TOKEN",
   docgen: true,
   eslintOptions: {
     dirs: ["."],
