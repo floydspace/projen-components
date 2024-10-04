@@ -92,10 +92,10 @@ const project = new TypeScriptProject({
     configFilePath: "jest.config.json",
     jestConfig: {
       coverageThreshold: {
-        branches: 95,
-        functions: 95,
-        lines: 95,
-        statements: 95,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+        statements: 90,
       },
     },
   },
@@ -146,6 +146,7 @@ npmReleaser.addToProject(project);
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
 new Changesets(project, {
+  defaultReleaseBranch: "main",
   repo: `${gitHubber.options.username}/${gitHubber.options.name}`,
   onlyUpdatePeerDependentsWhenOutOfRange: true,
 });

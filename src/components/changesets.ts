@@ -8,14 +8,21 @@ import { Component, JsonFile, Project, YamlFile, javascript } from "projen";
  */
 export interface ChangesetsOptions {
   /**
+   * The name of the main release branch.
+   *
+   * @default "main"
+   */
+  readonly defaultReleaseBranch: string;
+
+  /**
    * The GitHub repository in "org/repo" format.
    */
-  repo: string;
+  readonly repo: string;
 
   /**
    * If true, only update peer dependencies when they are out of range.
    */
-  onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
+  readonly onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
 }
 
 /**
@@ -84,6 +91,8 @@ export class Changesets extends Component {
       // });
     }
 
+    const branchName = options.defaultReleaseBranch ?? "main";
+
     // preserve the version number set by @changesets/cli
     const prev = this.readProjectPackageJson(project) ?? {};
     if (prev.version) {
@@ -110,7 +119,7 @@ export class Changesets extends Component {
         fixed: [],
         linked: [],
         access: "restricted",
-        baseBranch: "main",
+        baseBranch: branchName,
         updateInternalDependencies: "patch",
         ignore: [],
         ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
@@ -126,7 +135,7 @@ export class Changesets extends Component {
       obj: {
         name: "release",
         on: {
-          push: { branches: ["main"] },
+          push: { branches: [branchName] },
           workflow_dispatch: {}, // allow manual triggering
         },
         concurrency: {
@@ -162,6 +171,10 @@ export class Changesets extends Component {
                 with: { directory: "coverage" },
               },
               {
+                name: "Prepare Changeset",
+                run: "pnpm changeset pre ${{ github.ref == 'refs/heads/main' && 'exit' || 'enter next' }}}",
+              },
+              {
                 name: "Create Release Pull Request or Publish",
                 uses: "changesets/action@v1",
                 with: {
@@ -170,9 +183,8 @@ export class Changesets extends Component {
                 },
                 env: {
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
-                  NPM_DIST_TAG: "latest",
-                  NPM_CONFIG_PROVENANCE: "true",
                   NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+                  NPM_CONFIG_PROVENANCE: "true",
                 },
               },
             ],
