@@ -2,22 +2,30 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { Component, JsonFile, Project, YamlFile, javascript } from "projen";
+import { CSpell } from "./cspell";
 
 /**
  * Options for configuring the Changesets component.
  */
 export interface ChangesetsOptions {
   /**
+   * The GitHub repository in "org/repo" format.
+   */
+  readonly repo: string;
+
+  /**
    * The name of the main release branch.
    *
    * @default "main"
    */
-  readonly defaultReleaseBranch: string;
+  readonly defaultReleaseBranch?: string;
 
   /**
-   * The GitHub repository in "org/repo" format.
+   * The name of the prerelease branches.
+   *
+   * @default - []
    */
-  readonly repo: string;
+  readonly prereleaseBranches?: string[];
 
   /**
    * If true, only update peer dependencies when they are out of range.
@@ -145,23 +153,21 @@ export class Changesets extends Component {
       obj: {
         name: "release",
         on: {
-          push: { branches: [branchName] },
+          push: {
+            branches: [branchName, ...(options.prereleaseBranches ?? [])],
+          },
           workflow_dispatch: {}, // allow manual triggering
         },
         concurrency: {
-          group: "${{ github.workflow }}-${{ github.ref }}",
+          group: "${{ github.workflow }}-${{ github.ref_name }}",
         },
         jobs: {
           release: {
             "runs-on": "ubuntu-latest",
             permissions: {
               "pull-requests": "write",
-              ...(options.npmProvenance
-                ? {
-                    "id-token": "write",
-                    contents: "write",
-                  }
-                : {}),
+              contents: "write",
+              ...(options.npmProvenance ? { "id-token": "write" } : {}),
             },
             steps: [
               {
@@ -194,14 +200,13 @@ export class Changesets extends Component {
               },
               {
                 name: "Prepare Changeset",
-                run: "pnpm changeset pre ${{ github.ref == 'refs/heads/main' && 'exit' || 'enter next' }} || echo 'swallow'",
+                run: `pnpm changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
               },
               {
                 name: "Create Release Pull Request or Publish",
                 uses: "changesets/action@v1",
                 with: {
                   version: "pnpm bump",
-                  publish: "pnpm changeset publish",
                   commit: "chore(release): version packages",
                 },
                 env: {
@@ -224,6 +229,11 @@ export class Changesets extends Component {
    * Pre-synthesize hook to preserve version numbers set by @changesets/cli.
    */
   preSynthesize(): void {
+    for (const component of this.project.components) {
+      if (component instanceof CSpell) {
+        component.addWords("prerelease");
+      }
+    }
     for (const subproject of this.nodeProject.subprojects) {
       if (subproject instanceof javascript.NodeProject) {
         // preserve the version number set by @changesets/cli

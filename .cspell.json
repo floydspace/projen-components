@@ -81,7 +81,8 @@
     "p4-pre-submit",
     "post-index-change",
     "commitlint",
-    "hubber"
+    "hubber",
+    "prerelease"
   ],
   "dictionaryDefinitions": [
     {

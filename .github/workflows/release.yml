@@ -5,16 +5,17 @@ on:
   push:
     branches:
       - main
+      - next
   workflow_dispatch: {}
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      id-token: write
       contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,12 +40,11 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Prepare Changeset
-        run: pnpm changeset pre ${{ github.ref == 'refs/heads/main' && 'exit' || 'enter next' }} || echo 'swallow'
+        run: pnpm changeset pre ${{ github.ref_name == 'main' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'
       - name: Create Release Pull Request or Publish
         uses: changesets/action@v1
         with:
           version: pnpm bump
-          publish: pnpm changeset publish
           commit: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

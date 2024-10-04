@@ -146,7 +146,7 @@ npmReleaser.addToProject(project);
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
 new Changesets(project, {
-  defaultReleaseBranch: "main",
+  prereleaseBranches: ["next"],
   repo: `${gitHubber.options.username}/${gitHubber.options.name}`,
   onlyUpdatePeerDependentsWhenOutOfRange: true,
   npmProvenance: true,
