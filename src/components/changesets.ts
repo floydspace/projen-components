@@ -192,7 +192,7 @@ export class Changesets extends Component {
               },
               {
                 name: "Install dependencies",
-                run: "pnpm projen install",
+                run: "pnpm i --frozen-lockfile",
               },
               { name: "Build", run: "pnpm build" },
               ...((project.buildWorkflow as any)?.postBuildSteps ?? []),

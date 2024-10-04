@@ -32,7 +32,7 @@ jobs:
           node-version: lts/*
           cache: pnpm
       - name: Install dependencies
-        run: pnpm projen install
+        run: pnpm i --frozen-lockfile
       - name: Build
         run: pnpm build
       - name: Upload coverage to Codecov
