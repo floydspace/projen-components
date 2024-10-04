@@ -122,6 +122,11 @@ export class Changesets extends Component {
       steps: [{ exec: "changeset version" }, { spawn: "install" }],
     });
 
+    project.addTask("release", {
+      description: "Release with changesets",
+      exec: "changeset publish",
+    });
+
     project.addTask("changeset", {
       exec: "changeset",
       receiveArgs: true,
@@ -176,18 +181,18 @@ export class Changesets extends Component {
                 with: { "fetch-depth": 0 },
               },
               {
-                name: "Setup Node.js 20",
-                uses: "actions/setup-node@v3",
-                with: { "node-version": "20.x" },
+                name: "Setup pnpm",
+                uses: "pnpm/action-setup@v4",
+                with: { version: 8, run_install: false },
               },
               {
-                name: "Setup pnpm",
-                uses: "pnpm/action-setup@v3",
-                with: { version: "8" },
+                name: "Setup Node.js",
+                uses: "actions/setup-node@v4",
+                with: { "node-version": "lts/*", cache: "pnpm" },
               },
               {
                 name: "Install dependencies",
-                run: "pnpm i --frozen-lockfile",
+                run: "pnpm projen install",
               },
               { name: "Build", run: "pnpm build" },
               ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
@@ -212,7 +217,7 @@ export class Changesets extends Component {
                 uses: "changesets/action@v1",
                 with: {
                   version: "pnpm bump",
-                  publish: "pnpm changeset publish",
+                  publish: "pnpm release",
                   commit: "chore(release): version packages",
                 },
                 env: {

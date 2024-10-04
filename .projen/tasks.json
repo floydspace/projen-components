@@ -187,6 +187,15 @@
         }
       ]
     },
+    "release": {
+      "name": "release",
+      "description": "Release with changesets",
+      "steps": [
+        {
+          "exec": "changeset publish"
+        }
+      ]
+    },
     "spellcheck": {
       "name": "spellcheck",
       "description": "check all the files for spelling errors",
