@@ -154,9 +154,15 @@ export class Changesets extends Component {
         jobs: {
           release: {
             "runs-on": "ubuntu-latest",
-            ...(options.npmProvenance
-              ? { permissions: { "id-token": "write", contents: "write" } }
-              : {}),
+            permissions: {
+              "pull-requests": "write",
+              ...(options.npmProvenance
+                ? {
+                    "id-token": "write",
+                    contents: "write",
+                  }
+                : {}),
+            },
             steps: [
               {
                 name: "Checkout",
