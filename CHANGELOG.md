@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.5
+
+### Patch Changes
+
+- [`fd763b3`](https://github.com/floydspace/projen-components/commit/fd763b3607f0f1d361cc619a2f5dbd980ea087fe) Thanks [@floydspace](https://github.com/floydspace)! - revert projen install step
+
 ## 1.0.0-next.4
 
 ### Patch Changes
