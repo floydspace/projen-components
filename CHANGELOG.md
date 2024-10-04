@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.3
+
+### Patch Changes
+
+- [`fb323a6`](https://github.com/floydspace/projen-components/commit/fb323a6bb293a76bb75127a87f37c1edcecc2021) Thanks [@floydspace](https://github.com/floydspace)! - missed publish
+
 ## 1.0.0-next.2
 
 ### Patch Changes
