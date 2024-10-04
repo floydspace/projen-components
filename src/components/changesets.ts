@@ -155,7 +155,7 @@ export class Changesets extends Component {
           release: {
             "runs-on": "ubuntu-latest",
             ...(options.npmProvenance
-              ? { permissions: { "id-token": "write", contents: "read" } }
+              ? { permissions: { "id-token": "write", contents: "write" } }
               : {}),
             steps: [
               {
