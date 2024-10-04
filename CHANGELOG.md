@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.4
+
+### Patch Changes
+
+- [#6](https://github.com/floydspace/projen-components/pull/6) [`e0a7ec4`](https://github.com/floydspace/projen-components/commit/e0a7ec494ad910cecbffce3ec884ef6d47ae673d) Thanks [@github-actions](https://github.com/apps/github-actions)! - refactor codecov step
+
 ## 1.0.0-next.3
 
 ### Patch Changes
