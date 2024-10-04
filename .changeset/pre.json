@@ -5,6 +5,7 @@
     "@floydspace/projen-components": "0.3.4"
   },
   "changesets": [
+    "lemon-shirts-sing",
     "olive-pandas-rule"
   ]
 }
