@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@floydspace/projen-components": "0.3.4"
+  },
+  "changesets": [
+    "olive-pandas-rule"
+  ]
+}
