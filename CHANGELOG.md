@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.2
+
+### Patch Changes
+
+- [`c89a7bf`](https://github.com/floydspace/projen-components/commit/c89a7bf8841eac088a0ad12326c48e2bb18aeb68) Thanks [@floydspace](https://github.com/floydspace)! - do not run husky in ci
+
 ## 1.0.0-next.1
 
 ### Patch Changes
