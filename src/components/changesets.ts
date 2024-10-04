@@ -23,6 +23,14 @@ export interface ChangesetsOptions {
    * If true, only update peer dependencies when they are out of range.
    */
   readonly onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
+
+  /**
+   * Should provenance statements be generated when the package is published.
+   *
+   * @see https://docs.npmjs.com/generating-provenance-statements
+   * @default - false
+   */
+  readonly npmProvenance?: boolean;
 }
 
 /**
@@ -144,7 +152,9 @@ export class Changesets extends Component {
         jobs: {
           release: {
             "runs-on": "ubuntu-latest",
-            permissions: { "id-token": "write" },
+            ...(options.npmProvenance
+              ? { permissions: { "id-token": "write", contents: "read" } }
+              : {}),
             steps: [
               {
                 name: "Checkout",
@@ -189,7 +199,9 @@ export class Changesets extends Component {
                 env: {
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
                   NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                  NPM_CONFIG_PROVENANCE: "true",
+                  ...(options.npmProvenance
+                    ? { NPM_CONFIG_PROVENANCE: "true" }
+                    : {}),
                 },
               },
             ],

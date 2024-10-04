@@ -149,6 +149,7 @@ new Changesets(project, {
   defaultReleaseBranch: "main",
   repo: `${gitHubber.options.username}/${gitHubber.options.name}`,
   onlyUpdatePeerDependentsWhenOutOfRange: true,
+  npmProvenance: true,
 });
 
 project.addGitIgnore("/docs");
