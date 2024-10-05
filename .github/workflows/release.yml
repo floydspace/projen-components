@@ -22,10 +22,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v3
         with:
-          version: 8
-          run_install: false
+          version: "8"
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -34,19 +33,19 @@ jobs:
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
       - name: Build
-        run: pnpm build
+        run: npx projen build
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: coverage
       - name: Prepare Changeset
-        run: pnpm changeset pre ${{ github.ref_name == 'main' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'
+        run: npx projen changeset pre ${{ github.ref_name == 'main' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'
       - name: Create Release Pull Request or Publish
         uses: changesets/action@v1
         with:
-          version: pnpm bump
-          publish: pnpm release
+          version: npx projen bump
+          publish: npx projen release
           commit: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

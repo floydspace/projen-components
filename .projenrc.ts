@@ -77,6 +77,8 @@ const project = new TypeScriptProject({
   },
   release: false,
   releaseToNpm: false,
+  workflowPackageCache: true,
+  workflowNodeVersion: "lts/*",
   projenrcTs: true,
   license: "Apache-2.0",
   codeCov: true,

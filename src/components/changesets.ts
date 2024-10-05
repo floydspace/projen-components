@@ -180,35 +180,14 @@ export class Changesets extends Component {
                 uses: "actions/checkout@v4",
                 with: { "fetch-depth": 0 },
               },
-              {
-                name: "Setup pnpm",
-                uses: "pnpm/action-setup@v4",
-                with: { version: 8, run_install: false },
-              },
-              {
-                name: "Setup Node.js",
-                uses: "actions/setup-node@v4",
-                with: { "node-version": "lts/*", cache: "pnpm" },
-              },
-              {
-                name: "Install dependencies",
-                run: "pnpm i --frozen-lockfile",
-              },
-              { name: "Build", run: "pnpm build" },
+              ...project.renderWorkflowSetup(),
+              { name: "Build", run: "npx projen build" },
               ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
-              // {
-              //   name: "Upload coverage to Codecov",
-              //   uses: "codecov/codecov-action@v4",
-              //   with: {
-              //     token: "${{ secrets.CODECOV_TOKEN }}",
-              //     directory: "coverage",
-              //   },
-              // },
               ...(options.prereleaseBranches?.length
                 ? [
                     {
                       name: "Prepare Changeset",
-                      run: `pnpm changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
+                      run: `npx projen changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
                     },
                   ]
                 : []),
@@ -216,8 +195,8 @@ export class Changesets extends Component {
                 name: "Create Release Pull Request or Publish",
                 uses: "changesets/action@v1",
                 with: {
-                  version: "pnpm bump",
-                  publish: "pnpm release",
+                  version: "npx projen bump",
+                  publish: "npx projen release",
                   commit: "chore(release): version packages",
                 },
                 env: {
