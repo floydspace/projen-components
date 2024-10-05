@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.6
+
+### Patch Changes
+
+- [`13a9d16`](https://github.com/floydspace/projen-components/commit/13a9d1697305224f4d1eae29a2ccca724277cff4) Thanks [@floydspace](https://github.com/floydspace)! - made changesets workflow package manager agnostic
+
 ## 1.0.0-next.5
 
 ### Patch Changes
