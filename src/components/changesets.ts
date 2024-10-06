@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { Component, JsonFile, Project, YamlFile, javascript } from "projen";
+import { Component, JsonFile, Project, github, javascript } from "projen";
 import { CSpell } from "./cspell";
 
 /**
@@ -74,37 +74,6 @@ export class Changesets extends Component {
       throw new Error(
         "Cannot add the Changesets component to a project that already has a 'release' configuration."
       );
-      // project.node.tryRemoveChild(project.release.node.id);
-      // project.node.tryRemoveChild(project.release.publisher.node.id);
-      // project.removeTask("release");
-
-      // const version = project.components.find((c) => c instanceof Version);
-      // if (version) {
-      //   version.node.tryRemoveChild(version.node.id);
-      //   project.deps.removeDependency("commit-and-tag-version");
-      //   project.removeTask("bump");
-      //   project.removeTask("unbump");
-
-      //   const changelogFile = path.posix.join(
-      //     project.release.artifactsDirectory,
-      //     version.changelogFileName
-      //   );
-      //   const bumpFile = path.posix.join(
-      //     project.release.artifactsDirectory,
-      //     version.versionFileName
-      //   );
-      //   project.gitignore.removePatterns(`/${changelogFile}`);
-      //   project.gitignore.removePatterns(`/${bumpFile}`);
-      //   project.npmignore?.removePatterns(`/${changelogFile}`);
-      //   project.npmignore?.removePatterns(`/${bumpFile}`);
-      // }
-
-      // project.components.forEach((c) => {
-      //   if (c instanceof GithubWorkflow) {
-      //     project.node.tryRemoveChild(c.node.id);
-      //     c.file && project.node.tryRemoveChild(c.file.node.id);
-      //   }
-      // });
     }
 
     const branchName = options.defaultReleaseBranch ?? "main";
@@ -154,65 +123,71 @@ export class Changesets extends Component {
 
     project.addPackageIgnore("/.changeset/");
 
-    new YamlFile(project, ".github/workflows/release.yml", {
-      obj: {
-        name: "release",
-        on: {
-          push: {
-            branches: [branchName, ...(options.prereleaseBranches ?? [])],
-          },
-          workflow_dispatch: {}, // allow manual triggering
-        },
-        concurrency: {
+    const ghProject = github.GitHub.of(project.root);
+    if (ghProject) {
+      const setupSteps = project.renderWorkflowSetup().map((step) => ({
+        ...step,
+        uses: step.uses?.replace(
+          "pnpm/action-setup@v3",
+          "pnpm/action-setup@v4"
+        ),
+      }));
+      const workflow = new github.GithubWorkflow(ghProject, "release", {
+        limitConcurrency: true,
+        concurrencyOptions: {
           group: "${{ github.workflow }}-${{ github.ref_name }}",
         },
-        jobs: {
-          release: {
-            "runs-on": "ubuntu-latest",
-            permissions: {
-              "pull-requests": "write",
-              contents: "write",
-              ...(options.npmProvenance ? { "id-token": "write" } : {}),
-            },
-            steps: [
-              {
-                name: "Checkout",
-                uses: "actions/checkout@v4",
-                with: { "fetch-depth": 0 },
-              },
-              ...project.renderWorkflowSetup(),
-              { name: "Build", run: "npx projen build" },
-              ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
-              ...(options.prereleaseBranches?.length
-                ? [
-                    {
-                      name: "Prepare Changeset",
-                      run: `npx projen changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
-                    },
-                  ]
-                : []),
-              {
-                name: "Create Release Pull Request or Publish",
-                uses: "changesets/action@v1",
-                with: {
-                  version: "npx projen bump",
-                  publish: "npx projen release",
-                  commit: "chore(release): version packages",
-                },
-                env: {
-                  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
-                  NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                  ...(options.npmProvenance
-                    ? { NPM_CONFIG_PROVENANCE: "true" }
-                    : {}),
-                },
-              },
-            ],
-          },
+      });
+      workflow.on({
+        push: { branches: [branchName, ...(options.prereleaseBranches ?? [])] },
+        workflowDispatch: {}, // allow manual triggering
+      });
+      const job = new github.TaskWorkflowJob(this, this.project.buildTask, {
+        permissions: {
+          pullRequests: github.workflows.JobPermission.WRITE,
+          contents: github.workflows.JobPermission.WRITE,
+          idToken: options.npmProvenance
+            ? github.workflows.JobPermission.WRITE
+            : undefined,
         },
-      },
-      committed: true,
-    });
+        checkoutWith: {
+          // fetch-depth= indicates all history for all branches and tags
+          // we must use this in order to fetch all tags
+          // and to inspect the history to decide if we should release
+          fetchDepth: 0,
+        },
+        preBuildSteps: setupSteps,
+        postBuildSteps: [
+          ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
+          ...(options.prereleaseBranches?.length
+            ? [
+                {
+                  name: "Prepare Changeset",
+                  run: `npx projen changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
+                },
+              ]
+            : []),
+          {
+            name: "Create Release Pull Request or Publish",
+            uses: "changesets/action@v1",
+            with: {
+              version: "npx projen bump",
+              publish: "npx projen release",
+              commit: "chore(release): version packages",
+              setupGitUser: false, // we already set the git user in the setup steps
+            },
+            env: {
+              GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+              NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+              ...(options.npmProvenance
+                ? { NPM_CONFIG_PROVENANCE: "true" }
+                : {}),
+            },
+          },
+        ],
+      });
+      workflow.addJob("release", job);
+    }
   }
 
   /**
