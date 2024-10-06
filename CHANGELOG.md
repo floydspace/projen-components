@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.7
+
+### Patch Changes
+
+- [`e0fe78b`](https://github.com/floydspace/projen-components/commit/e0fe78b97515bba242a4163afd682ba355716762) Thanks [@floydspace](https://github.com/floydspace)! - reuse github workflow component
+
 ## 1.0.0-next.6
 
 ### Patch Changes
