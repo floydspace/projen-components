@@ -5,6 +5,7 @@
     "@floydspace/projen-components": "0.3.4"
   },
   "changesets": [
+    "beige-birds-wait",
     "calm-squids-mate",
     "cool-liners-melt",
     "forty-pumpkins-drum",
