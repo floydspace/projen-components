@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.8
+
+### Patch Changes
+
+- [#12](https://github.com/floydspace/projen-components/pull/12) [`93b84de`](https://github.com/floydspace/projen-components/commit/93b84de6403aa7a020b1d84f7e0475587b04d264) Thanks [@floydspace](https://github.com/floydspace)! - vitest component
+
 ## 1.0.0-next.7
 
 ### Patch Changes
