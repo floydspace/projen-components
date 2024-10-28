@@ -1,4 +1,3 @@
-import * as path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -10,6 +9,6 @@ export default defineConfig({
       reporter: ["json", "lcov", "clover", "cobertura", "text"],
       include: ["src/**/*.?(c|m)[jt]s?(x)"],
     },
-    reporters: ["default", ["junit", { outputFile: path.resolve(__dirname, "test-reports/junit.xml") }]],
+    reporters: ["default", ["junit", { outputFile: "test-reports/junit.xml" }]],
   },
 });
