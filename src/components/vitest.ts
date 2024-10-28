@@ -73,16 +73,13 @@ export class Vitest extends Component {
       exec: "vitest --watch --passWithNoTests",
     });
 
-    const compilerOptions = project.tsconfig?.compilerOptions as any;
+    const compilerOptions = project.tsconfigDev?.compilerOptions as any;
 
     if (compilerOptions && this.options?.globals) {
-      compilerOptions.rootDir = ".";
       compilerOptions.types = [
         ...(compilerOptions.types ?? []),
         "vitest/globals",
       ];
-      project.tsconfig?.addInclude("test/**/*.ts");
-      project.tsconfig?.addExclude("node_modules");
     }
 
     project.addGitIgnore("/test-reports/");
