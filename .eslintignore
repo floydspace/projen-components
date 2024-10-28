@@ -27,8 +27,8 @@
 .vscode/extensions.json
 .vscode/settings.json
 CODE_OF_CONDUCT.md
-jest.config.json
 LICENSE
 package.json
 tsconfig.dev.json
 tsconfig.json
+vitest.config.ts
