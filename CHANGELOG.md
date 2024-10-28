@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.9
+
+### Patch Changes
+
+- [`c2a1dba`](https://github.com/floydspace/projen-components/commit/c2a1dbae2e81c9e72a6e8e40630297d9f37014b3) Thanks [@floydspace](https://github.com/floydspace)! - fix distro
+
 ## 1.0.0-next.8
 
 ### Patch Changes
