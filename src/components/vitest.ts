@@ -99,6 +99,7 @@ export class Vitest extends Component {
         "export default defineConfig({",
         "  test: {",
         ...(this.options?.globals ? ["    globals: true,"] : []),
+        '    include: ["{src,test}/**/*.{test,spec}.?(c|m)[jt]s?(x)"],',
         "    coverage: {",
         "      enabled: true,",
         '      reporter: ["json", "lcov", "clover", "cobertura", "text"],',

@@ -74,6 +74,7 @@ const project = new TypeScriptProject({
   tsconfig: {
     compilerOptions: {
       esModuleInterop: true,
+      skipLibCheck: true,
     },
   },
   release: false,
