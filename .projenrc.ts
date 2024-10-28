@@ -7,6 +7,7 @@ import {
   GitHubber,
   NpmReleaser,
   Changesets,
+  Vitest,
 } from "./src";
 
 const gitHubber = new GitHubber({
@@ -81,8 +82,6 @@ const project = new TypeScriptProject({
   workflowNodeVersion: "lts/*",
   projenrcTs: true,
   license: "Apache-2.0",
-  codeCov: true,
-  codeCovTokenSecret: "CODECOV_TOKEN",
   docgen: true,
   eslintOptions: {
     dirs: ["."],
@@ -91,17 +90,7 @@ const project = new TypeScriptProject({
   dependabotOptions: {
     labels: ["auto-approve"],
   },
-  jestOptions: {
-    configFilePath: "jest.config.json",
-    jestConfig: {
-      coverageThreshold: {
-        branches: 90,
-        functions: 90,
-        lines: 90,
-        statements: 90,
-      },
-    },
-  },
+  jest: false,
   autoApproveUpgrades: true,
   autoApproveOptions: {
     allowedUsernames: ["dependabot[bot]"],
@@ -152,6 +141,10 @@ npmReleaser.addToProject(project);
 
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
+new Vitest(project, {
+  globals: true,
+  codeCovTokenSecret: "CODECOV_TOKEN",
+});
 new Changesets(project, {
   prereleaseBranches: ["next"],
   repo: `${gitHubber.options.username}/${gitHubber.options.name}`,

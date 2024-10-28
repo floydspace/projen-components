@@ -31,10 +31,6 @@ jspm_packages/
 *.tgz
 .yarn-integrity
 .cache
-/test-reports/
-junit.xml
-!/jest.config.json
-/coverage/
 !/.github/workflows/build.yml
 !/.mergify.yml
 !/.github/dependabot.yml
@@ -53,6 +49,10 @@ junit.xml
 !/.eslintignore
 !/.eslintrc-json.json
 !/CODE_OF_CONDUCT.md
+/test-reports/
+junit.xml
+/coverage/
+!/vitest.config.ts
 !/.changeset/config.json
 !/.github/workflows/release.yml
 /docs

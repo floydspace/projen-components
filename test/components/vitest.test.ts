@@ -7,6 +7,7 @@ test("vitest is added", () => {
     outdir: mkdtemp(),
     name: "test-project",
     defaultReleaseBranch: "main",
+    jest: false,
   });
 
   new TypeScriptProject({
@@ -14,9 +15,7 @@ test("vitest is added", () => {
     outdir: "packages/test-subproject",
     name: "test-subproject",
     defaultReleaseBranch: "main",
-    jestOptions: {
-      configFilePath: "jest.config.json",
-    },
+    jest: false,
   });
 
   new Vitest(project);
@@ -34,4 +33,26 @@ test("vitest is added", () => {
   expect(subprojectPackageJson.devDependencies).toHaveProperty("vitest");
   expect(subprojectPackageJson.devDependencies).not.toHaveProperty("jest");
   expect(Object.keys(snapshot)).toContain("vitest.workspace.json");
+});
+
+test("vitest is not added if jest is already configured", () => {
+  const project = new TypeScriptProject({
+    outdir: mkdtemp(),
+    name: "test-project",
+    defaultReleaseBranch: "main",
+  });
+
+  new TypeScriptProject({
+    parent: project,
+    outdir: "packages/test-subproject",
+    name: "test-subproject",
+    defaultReleaseBranch: "main",
+    jestOptions: {
+      configFilePath: "jest.config.json",
+    },
+  });
+
+  expect(() => new Vitest(project)).toThrowError(
+    "Cannot add the Vitest component to a project that already has a 'jest' configuration."
+  );
 });

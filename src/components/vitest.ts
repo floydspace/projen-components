@@ -1,6 +1,25 @@
-import { Component, JsonFile, Project, javascript, typescript } from "projen";
+import { Component, JsonFile, Project, TextFile, typescript } from "projen";
 import { CSpell } from "./cspell";
 import { VscodeExtensionRecommendations } from "./vscode-extension-recommendations";
+
+/**
+ * Options for configuring the Vitest component.
+ */
+export interface VitestOptions {
+  /**
+   * Enable the Vitest global variables.
+   *
+   * @default false
+   */
+  readonly globals?: boolean;
+  /**
+   * Define the secret name for a specified https://codecov.io/ token
+   * A secret is required to send coverage for private repositories
+   *
+   * @default - if this option is not specified, only public repositories are supported
+   */
+  readonly codeCovTokenSecret?: string;
+}
 
 /**
  * replaces jest with vitest
@@ -21,48 +40,108 @@ export class Vitest extends Component {
    * Creates an instance of the Vitest component.
    *
    * @param project The TypeScript project to which this component belongs.
+   * @param options The Vitest component options.
    */
-  constructor(project: typescript.TypeScriptProject) {
+  constructor(
+    project: typescript.TypeScriptProject,
+    private readonly options?: VitestOptions
+  ) {
     super(project);
 
     if (project.jest) {
-      removeNode(project.jest.node.id, project);
+      throw new Error(
+        "Cannot add the Vitest component to a project that already has a 'jest' configuration."
+      );
+    }
+
+    if (this.options?.codeCovTokenSecret) {
+      project.buildWorkflow?.addPostBuildSteps(
+        ...(project as any).renderUploadCoverageJobStep.call(
+          { jest: { config: { coverageDirectory: "coverage" } } },
+          { codeCovTokenSecret: this.options.codeCovTokenSecret }
+        )
+      );
     }
 
     project.addDevDeps("vitest", "@vitest/coverage-v8");
 
-    project.testTask.reset("vitest --globals", { receiveArgs: true });
+    project.testTask.prependExec("vitest run --passWithNoTests", {
+      receiveArgs: true,
+    });
+    project.addTask("test:watch", {
+      description: "Run tests in watch mode",
+      exec: "vitest --watch --passWithNoTests",
+    });
 
     const compilerOptions = project.tsconfig?.compilerOptions as any;
 
-    if (compilerOptions) {
+    if (compilerOptions && this.options?.globals) {
+      compilerOptions.rootDir = ".";
       compilerOptions.types = [
         ...(compilerOptions.types ?? []),
         "vitest/globals",
       ];
+      project.tsconfig?.addInclude("test/**/*.ts");
+      project.tsconfig?.addExclude("node_modules");
     }
 
-    new JsonFile(project, "vitest.workspace.json", {
-      obj: ["packages/*"],
-      omitEmpty: true,
+    project.addGitIgnore("/test-reports/");
+    project.addGitIgnore("junit.xml");
+    project.addGitIgnore("/coverage/");
+    project.npmignore?.addPatterns("/test-reports/");
+    project.npmignore?.addPatterns("junit.xml");
+    project.npmignore?.addPatterns("/coverage/");
+
+    new TextFile(this, "vitest.config.ts", {
+      lines: [
+        'import { defineConfig } from "vitest/config";',
+        "",
+        "export default defineConfig({",
+        "  test: {",
+        ...(this.options?.globals ? ["    globals: true,"] : []),
+        "    coverage: {",
+        "      enabled: true,",
+        '      reporter: ["json", "lcov", "clover", "cobertura", "text"],',
+        '      include: ["src/**/*.?(c|m)[jt]s?(x)"],',
+        "    },",
+        '    reporters: ["default", ["junit", { outputFile: "test-reports/junit.xml" }]],',
+        "  },",
+        "});",
+        "",
+      ],
     });
+    project.npmignore?.addPatterns("/vitest.config.ts");
   }
 
   /**
    * adds vitest to the subprojects
    */
   preSynthesize(): void {
+    if (this.project.subprojects.length > 0) {
+      new JsonFile(this, "vitest.workspace.json", {
+        obj: ["packages/*"],
+        omitEmpty: true,
+      });
+      (this.project as typescript.TypeScriptProject).npmignore?.addPatterns(
+        "/vitest.workspace.json"
+      );
+    }
+
     this.project.subprojects.forEach((subproject) => {
       if (subproject instanceof typescript.TypeScriptProject) {
         if (subproject.jest) {
-          removeNode(subproject.jest.node.id, subproject);
+          throw new Error(
+            "Cannot add the Vitest component to a project that already has a 'jest' configuration."
+          );
         }
 
         subproject.addDevDeps("vitest");
-        subproject.testTask.exec("vitest run --globals", { receiveArgs: true });
+        subproject.testTask.exec("vitest run", {
+          receiveArgs: true,
+        });
         subproject.addTask("test:watch", {
           description: "Run tests in watch mode",
-          exec: "vitest --globals --passWithNoTests --reporter verbose",
+          exec: "vitest --watch --passWithNoTests --reporter verbose",
         });
       }
     });
@@ -71,78 +150,5 @@ export class Vitest extends Component {
     VscodeExtensionRecommendations.of(this.project)?.addRecommendations(
       "vitest.explorer"
     );
-  }
-}
-
-/**
- * Removes a node from the project and resets the Jest state.
- *
- * @param nodeId - The ID of the node to remove.
- * @param project - The project from which to remove the node.
- */
-function removeNode(nodeId: string, project: javascript.NodeProject) {
-  project.node.tryRemoveChild(nodeId);
-  resetProjectJestState(project);
-}
-
-/**
- * Resets the Jest state for the given project.
- *
- * @param project - The project for which to reset the Jest state.
- */
-function resetProjectJestState(project: javascript.NodeProject) {
-  unannotateGenerated.call(project.root, "*.snap");
-  project.deps.removeDependency("jest");
-  project.deps.removeDependency("jest-junit");
-  project.deps.removeDependency("@types/jest");
-  project.deps.removeDependency("ts-jest");
-  project.gitignore.removePatterns(
-    "# jest-junit artifacts",
-    "/test-reports/",
-    "junit.xml",
-    "/coverage/"
-  );
-  project.npmignore?.removePatterns(
-    "# jest-junit artifacts",
-    "/test-reports/",
-    "junit.xml",
-    "/coverage/"
-  );
-  delete project.manifest.jest;
-  if (project.jest?.file) {
-    project.node.tryRemoveChild(project.jest.file.node.id);
-    project.npmignore?.removePatterns(`/${project.jest.file.path}`);
-  }
-  project.testTask.removeStep(0);
-  project.removeTask("test:watch");
-}
-
-/**
- * Removes the 'linguist-generated' attribute from the specified glob pattern in the .gitattributes file.
- *
- * @param this - The project in which to unannotate the generated files.
- * @param glob - The glob pattern to match files.
- */
-function unannotateGenerated(this: Project, glob: string): void {
-  removeAttributes.call(this.gitattributes, glob, "linguist-generated");
-}
-
-/**
- * Removes specified attributes from the given glob pattern in the .gitattributes file.
- *
- * @param this - The context in which to remove attributes.
- * @param glob - The glob pattern to match files.
- * @param attributes - The attributes to remove.
- */
-function removeAttributes(this: any, glob: string, ...attributes: string[]) {
-  if (!this.attributes.has(glob)) {
-    return;
-  }
-  const set = this.attributes.get(glob)!;
-  for (const attribute of attributes) {
-    set.delete(attribute);
-  }
-  if (set.size === 0) {
-    this.attributes.delete(glob);
   }
 }
