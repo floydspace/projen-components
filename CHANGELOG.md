@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.10
+
+### Patch Changes
+
+- [`01a9b04`](https://github.com/floydspace/projen-components/commit/01a9b048c6c5773f040fb68d6167ea28ad581619) Thanks [@floydspace](https://github.com/floydspace)! - parametrize junit reporting
+
 ## 1.0.0-next.9
 
 ### Patch Changes
