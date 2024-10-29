@@ -2,6 +2,8 @@ import { Component, JsonFile, Project, TextFile, typescript } from "projen";
 import { CSpell } from "./cspell";
 import { VscodeExtensionRecommendations } from "./vscode-extension-recommendations";
 
+const DEFAULT_TEST_REPORTS_DIR = "test-reports";
+
 /**
  * Options for configuring the Vitest component.
  */
@@ -19,6 +21,14 @@ export interface VitestOptions {
    * @default - if this option is not specified, only public repositories are supported
    */
   readonly codeCovTokenSecret?: string;
+  /**
+   * Result processing with junit.
+   *
+   * Output directory is `test-reports/`.
+   *
+   * @default true
+   */
+  readonly junitReporting?: boolean;
 }
 
 /**
@@ -65,12 +75,12 @@ export class Vitest extends Component {
 
     project.addDevDeps("vitest", "@vitest/coverage-v8");
 
-    project.testTask.prependExec("vitest run --passWithNoTests", {
+    project.testTask.prependExec("vitest run --passWithNoTests --update", {
       receiveArgs: true,
     });
     project.addTask("test:watch", {
       description: "Run tests in watch mode",
-      exec: "vitest --watch --passWithNoTests",
+      exec: "vitest --watch",
     });
 
     const compilerOptions = project.tsconfigDev?.compilerOptions as any;
@@ -82,11 +92,15 @@ export class Vitest extends Component {
       ];
     }
 
-    project.addGitIgnore("/test-reports/");
-    project.addGitIgnore("junit.xml");
+    if (this.options?.junitReporting ?? true) {
+      const reportsDir = DEFAULT_TEST_REPORTS_DIR;
+      project.addGitIgnore(`/${reportsDir}/`);
+      project.addGitIgnore("junit.xml");
+      project.npmignore?.addPatterns(`/${reportsDir}/`);
+      project.npmignore?.addPatterns("junit.xml");
+    }
+
     project.addGitIgnore("/coverage/");
-    project.npmignore?.addPatterns("/test-reports/");
-    project.npmignore?.addPatterns("junit.xml");
     project.npmignore?.addPatterns("/coverage/");
 
     new TextFile(this, "vitest.config.ts", {
@@ -102,13 +116,18 @@ export class Vitest extends Component {
         '      reporter: ["json", "lcov", "clover", "cobertura", "text"],',
         '      include: ["src/**/*.?(c|m)[jt]s?(x)"],',
         "    },",
-        '    reporters: ["default", ["junit", { outputFile: "test-reports/junit.xml" }]],',
+        `    reporters: ["default", ["junit", { outputFile: "${DEFAULT_TEST_REPORTS_DIR}/junit.xml" }]],`,
         "  },",
         "});",
         "",
       ],
     });
     project.npmignore?.addPatterns("/vitest.config.ts");
+    project.tsconfigDev.addInclude("vitest.config.ts");
+    project.eslint?.addOverride({
+      files: ["vitest.config.ts"],
+      rules: { "import/no-extraneous-dependencies": "off" },
+    });
   }
 
   /**

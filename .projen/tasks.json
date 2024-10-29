@@ -210,7 +210,7 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "vitest run --passWithNoTests",
+          "exec": "vitest run --passWithNoTests --update",
           "receiveArgs": true
         },
         {
@@ -229,7 +229,7 @@
       "description": "Run tests in watch mode",
       "steps": [
         {
-          "exec": "vitest --watch --passWithNoTests"
+          "exec": "vitest --watch"
         }
       ]
     },
