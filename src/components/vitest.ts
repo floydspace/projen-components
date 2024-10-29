@@ -116,7 +116,11 @@ export class Vitest extends Component {
         '      reporter: ["json", "lcov", "clover", "cobertura", "text"],',
         '      include: ["src/**/*.?(c|m)[jt]s?(x)"],',
         "    },",
-        `    reporters: ["default", ["junit", { outputFile: "${DEFAULT_TEST_REPORTS_DIR}/junit.xml" }]],`,
+        ...(this.options?.junitReporting ?? true
+          ? [
+              `    reporters: ["default", ["junit", { outputFile: "${DEFAULT_TEST_REPORTS_DIR}/junit.xml" }]],`,
+            ]
+          : []),
         "  },",
         "});",
         "",
