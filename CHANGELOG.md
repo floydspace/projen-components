@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.11
+
+### Patch Changes
+
+- [`61a8d9a`](https://github.com/floydspace/projen-components/commit/61a8d9a045033650aca4fab3f42f91e7a3ec2fa9) Thanks [@floydspace](https://github.com/floydspace)! - actually disable junit when flag is false
+
 ## 1.0.0-next.10
 
 ### Patch Changes
