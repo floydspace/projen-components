@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { Project, Task, YamlFile } from "projen";
+import { IniFile, Project, Task, YamlFile } from "projen";
 import { NodePackageManager, NodeProject } from "projen/lib/javascript";
 import {
   TypeScriptProject,
@@ -9,6 +9,7 @@ import {
   ILinkableProjectCore,
   LinkableProject,
 } from "../components/linkable-project";
+import { OnlyAllow } from "../components/only-allow";
 import { NodePackageUtils } from "../util/node";
 import { ProjectUtils } from "../util/project";
 
@@ -89,6 +90,11 @@ export class PnpmMonorepoProject
     if (options.pnpmVersion) {
       this.package.addField("packageManager", `pnpm@${options.pnpmVersion}`);
     }
+
+    new OnlyAllow(this);
+
+    this.addDevDeps("tsx");
+    this.defaultTask?.reset("tsx .projenrc.ts");
 
     this.workspacePackages = [];
 
@@ -285,6 +291,27 @@ export class PnpmMonorepoProject
    */
   preSynthesize(): void {
     NodePackageUtils.removeProjenScript(this);
+
+    if (
+      !ProjectUtils.isNamedInstanceOf(this.root, NodeProject) &&
+      !this.root.tryFindFile(".npmrc")
+    ) {
+      new IniFile(this.root, ".npmrc", {
+        obj: {
+          "resolution-mode": "highest",
+          yes: "true",
+          "prefer-workspace-packages": "true",
+          "link-workspace-packages": "true",
+        },
+      }).synthesize();
+    } else if (
+      ProjectUtils.isNamedInstanceOf(this.root, NodeProject) &&
+      this.root.package.packageManager === NodePackageManager.PNPM
+    ) {
+      this.root.npmrc.addConfig("prefer-workspace-packages", "true");
+      this.root.npmrc.addConfig("link-workspace-packages", "true");
+      this.root.npmrc.addConfig("yes", "true");
+    }
 
     super.preSynthesize();
 
