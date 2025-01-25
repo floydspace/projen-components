@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.13
+
+### Patch Changes
+
+- [`22cb3be`](https://github.com/floydspace/projen-components/commit/22cb3bea0e7f4fed846f228066986f6dd4b3eebd) Thanks [@floydspace](https://github.com/floydspace)! - build workflow is optional in changesets; enforce pnpm in monorepo project
+
 ## 1.0.0-next.12
 
 ### Minor Changes
