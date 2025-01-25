@@ -1,12 +1,12 @@
 import { NodePackageManager, NpmAccess } from "projen/lib/javascript";
 import { TypeScriptProject } from "projen/lib/typescript";
 import {
-  Recommended,
-  Organisational,
+  Changesets,
   CodeOfConduct,
   GitHubber,
   NpmReleaser,
-  Changesets,
+  Organisational,
+  Recommended,
   Vitest,
 } from "./src";
 
@@ -70,7 +70,7 @@ const project = new TypeScriptProject({
   ],
   defaultReleaseBranch: "main",
   packageManager: NodePackageManager.PNPM,
-  pnpmVersion: "8",
+  pnpmVersion: "9",
   tsconfig: {
     compilerOptions: {
       esModuleInterop: true,
@@ -154,7 +154,8 @@ new Changesets(project, {
 });
 
 project.addGitIgnore("/docs");
-project.package.addEngine("pnpm", ">=8 <9");
+project.package.addEngine("pnpm", ">=9 <10");
+project.package.addField("packageManager", "pnpm@9.15.4");
 // pnpm requires using hoisted node_modules when `bundledDependencies` are used
 // see here https://pnpm.io/next/npmrc#node-linker
 project.npmrc.addConfig("node-linker", "hoisted");

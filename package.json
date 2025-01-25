@@ -106,7 +106,7 @@
     "vscode-extension-recommendations"
   ],
   "engines": {
-    "pnpm": ">=8 <9"
+    "pnpm": ">=9 <10"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
@@ -119,6 +119,7 @@
     "url": "https://github.com/floydspace/projen-components/issues"
   },
   "types": "lib/index.d.ts",
+  "packageManager": "pnpm@9.15.4",
   "contributors": [
     "Juho Saarinen <juho.saarinen@gmail.com>",
     "Tom Howard <tom@windyroad.com.au>",
