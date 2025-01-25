@@ -58,6 +58,7 @@ export class Changesets extends Component {
   }
 
   private readonly nodeProject: javascript.NodeProject;
+  private readonly releaseJob?: github.TaskWorkflowJob;
 
   /**
    * Creates an instance of the Changesets component.
@@ -187,6 +188,7 @@ export class Changesets extends Component {
         ],
       });
       workflow.addJob("release", job);
+      this.releaseJob = job;
     }
   }
 
@@ -199,6 +201,25 @@ export class Changesets extends Component {
         component.addWords("prerelease");
       }
     }
+
+    // GitHub actions can handle either `packageManager` or `with.version` action config, but not both
+    if ("packageManager" in this.nodeProject.package.manifest) {
+      const steps = [
+        ...(this.releaseJob?.steps ?? []),
+        // @ts-ignore - `preBuildSteps` is private
+        ...this.nodeProject.buildWorkflow.preBuildSteps,
+      ];
+      steps.forEach((step) => {
+        if (step.uses?.startsWith("pnpm/action-setup")) {
+          delete step.with?.version;
+          if (JSON.stringify(step.with) === "{}") {
+            // @ts-ignore - `with` is readonly
+            delete step.with;
+          }
+        }
+      });
+    }
+
     for (const subproject of this.nodeProject.subprojects) {
       if (subproject instanceof javascript.NodeProject) {
         // preserve the version number set by @changesets/cli
