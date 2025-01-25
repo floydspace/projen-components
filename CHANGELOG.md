@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.12
+
+### Minor Changes
+
+- [`23a769e`](https://github.com/floydspace/projen-components/commit/23a769ecca61da2c31a07c1386f0a6a084786878) Thanks [@floydspace](https://github.com/floydspace)! - implement pnpm monorepo project
+
 ## 1.0.0-next.11
 
 ### Patch Changes
