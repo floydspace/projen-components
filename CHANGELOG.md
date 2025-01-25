@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.14
+
+### Minor Changes
+
+- [`81f7675`](https://github.com/floydspace/projen-components/commit/81f7675930daf76a4ec086d0fbdb78b9216daa47) Thanks [@floydspace](https://github.com/floydspace)! - only allow pnpm by default; run projen with tsx; pnpm monorepo options
+
 ## 1.0.0-next.13
 
 ### Patch Changes
