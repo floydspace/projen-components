@@ -207,7 +207,7 @@ export class Changesets extends Component {
       const steps = [
         ...(this.releaseJob?.steps ?? []),
         // @ts-ignore - `preBuildSteps` is private
-        ...this.nodeProject.buildWorkflow.preBuildSteps,
+        ...(this.nodeProject.buildWorkflow?.preBuildSteps ?? []),
       ];
       steps.forEach((step) => {
         if (step.uses?.startsWith("pnpm/action-setup")) {

@@ -16,7 +16,10 @@ import { ProjectUtils } from "../util/project";
  * Configuration options for the PnpmMonorepoProject.
  */
 export interface PnpmMonorepoProjectOptions
-  extends Omit<TypeScriptProjectOptions, "defaultReleaseBranch"> {
+  extends Omit<
+    TypeScriptProjectOptions,
+    "defaultReleaseBranch" | "packageManager"
+  > {
   /**
    * The name of the main release branch.
    *
@@ -47,11 +50,10 @@ export class PnpmMonorepoProject
     const defaultReleaseBranch = options.defaultReleaseBranch ?? "main";
     super({
       ...options,
+      packageManager: NodePackageManager.PNPM,
       github: options.github ?? false,
       package: options.package ?? false,
-      projenCommand: options.packageManager
-        ? NodePackageUtils.command.projen(options.packageManager)
-        : undefined,
+      projenCommand: NodePackageUtils.command.projen(NodePackageManager.PNPM),
       prettier: options.prettier ?? true,
       projenrcTs: true,
       release: options.release ?? false,
@@ -84,6 +86,9 @@ export class PnpmMonorepoProject
     );
 
     this.package.addEngine("pnpm", ">=9 <10");
+    if (options.pnpmVersion) {
+      this.package.addField("packageManager", `pnpm@${options.pnpmVersion}`);
+    }
 
     this.workspacePackages = [];
 
