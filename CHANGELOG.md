@@ -1,5 +1,12 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.15
+
+### Patch Changes
+
+- [`1c46d59`](https://github.com/floydspace/projen-components/commit/1c46d595540c6f807935ed9b22e429118e09702b) Thanks [@floydspace](https://github.com/floydspace)! - add `fixed` and `linked` options in Changesets component
+  remove OnlyAllow component from PnpmMonorepo project
+
 ## 1.0.0-next.14
 
 ### Minor Changes
