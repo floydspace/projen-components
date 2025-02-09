@@ -9,7 +9,6 @@ import {
   ILinkableProjectCore,
   LinkableProject,
 } from "../components/linkable-project";
-import { OnlyAllow } from "../components/only-allow";
 import { NodePackageUtils } from "../util/node";
 import { ProjectUtils } from "../util/project";
 
@@ -90,8 +89,6 @@ export class PnpmMonorepoProject
     if (options.pnpmVersion) {
       this.package.addField("packageManager", `pnpm@${options.pnpmVersion}`);
     }
-
-    new OnlyAllow(this);
 
     this.addDevDeps("tsx");
     this.defaultTask?.reset("tsx .projenrc.ts");

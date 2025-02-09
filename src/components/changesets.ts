@@ -28,6 +28,20 @@ export interface ChangesetsOptions {
   readonly prereleaseBranches?: string[];
 
   /**
+   * Packages that should always be released together with the same version.
+   *
+   * @default - []
+   */
+  readonly fixed?: string[];
+
+  /**
+   * Packages that should be linked together so when they are being released, they will be released at the same version.
+   *
+   * @default - []
+   */
+  readonly linked?: string[];
+
+  /**
    * If true, only update peer dependencies when they are out of range.
    */
   readonly onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
@@ -107,8 +121,8 @@ export class Changesets extends Component {
         $schema: "https://unpkg.com/@changesets/config@3.0.3/schema.json",
         changelog: ["@changesets/changelog-github", { repo: options.repo }],
         commit: false,
-        fixed: [],
-        linked: [],
+        fixed: options.fixed ?? [],
+        linked: options.linked ?? [],
         access: "restricted",
         baseBranch: branchName,
         updateInternalDependencies: "patch",
