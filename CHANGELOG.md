@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.16
+
+### Patch Changes
+
+- [`6759a7c`](https://github.com/floydspace/projen-components/commit/6759a7ca6c5b69f00f7b8b0ce127c4caecadc08f) Thanks [@floydspace](https://github.com/floydspace)! - fix bug usage in changeset schema
+
 ## 1.0.0-next.15
 
 ### Patch Changes
