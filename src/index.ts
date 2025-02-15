@@ -10,6 +10,7 @@ export * from "./components/eslint-no-secrets";
 export * from "./components/eslint-prettier-fixer";
 export * from "./components/eslint-unicorn";
 export * from "./components/git-hubber";
+export * from "./components/git-identity-fixer";
 export * from "./components/husky";
 export * from "./components/linkable-project";
 export * from "./components/npm-releaser";
