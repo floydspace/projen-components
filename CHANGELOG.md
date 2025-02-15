@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.0-next.17
+
+### Patch Changes
+
+- [`ee363f7`](https://github.com/floydspace/projen-components/commit/ee363f7c4ce2de50262b5891937cdc98ee4aa219) Thanks [@floydspace](https://github.com/floydspace)! - add GitIdentityFixer component
+
 ## 1.0.0-next.16
 
 ### Patch Changes
