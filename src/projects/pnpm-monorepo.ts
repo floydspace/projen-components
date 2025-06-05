@@ -187,7 +187,7 @@ export class PnpmMonorepoProject
       task._locked = false;
     }
 
-    task.reset(`pnpm --recursive --parallel run ${options.target}`, {
+    task.reset(`pnpm --recursive --workspace-concurrency=0 run ${options.target}`, {
       receiveArgs: true,
     });
 
