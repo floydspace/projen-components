@@ -26,6 +26,13 @@ export interface PnpmMonorepoProjectOptions
    * @default "main"
    */
   readonly defaultReleaseBranch?: string;
+
+  /**
+   * The concurrency level for workspace tasks.
+   *
+   * @default pnpm's default concurrency
+   */
+  readonly workspaceTasksConcurrency?: number;
 }
 
 /**
@@ -38,6 +45,7 @@ export class PnpmMonorepoProject
 {
   // immutable data structures
   private readonly workspacePackages: string[];
+  private readonly workspaceTasksConcurrency?: number;
 
   private subNodeProjectResolves: Array<() => boolean> = [];
 
@@ -72,6 +80,8 @@ export class PnpmMonorepoProject
         include: ["**/*.ts", ".projenrc.ts"],
       },
     });
+
+    this.workspaceTasksConcurrency = options.workspaceTasksConcurrency;
 
     // engines
     this.package.addEngine("node", ">=18");
@@ -187,9 +197,17 @@ export class PnpmMonorepoProject
       task._locked = false;
     }
 
-    task.reset(`pnpm --recursive --parallel run ${options.target}`, {
-      receiveArgs: true,
-    });
+    const command = [
+      "pnpm",
+      "--recursive",
+      this.workspaceTasksConcurrency
+        ? `--workspace-concurrency=${this.workspaceTasksConcurrency}`
+        : "",
+      "run",
+      options.target,
+    ];
+
+    task.reset(command.join(" "), { receiveArgs: true });
 
     task.description += " for all affected projects";
 
