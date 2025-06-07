@@ -54,10 +54,7 @@ export class PnpmMonorepoProject
    *
    * @param options - Configuration options for the PnpmMonorepoProject.
    */
-  constructor({
-    workspaceTasksConcurrency,
-    ...options
-  }: PnpmMonorepoProjectOptions) {
+  constructor(options: PnpmMonorepoProjectOptions) {
     const defaultReleaseBranch = options.defaultReleaseBranch ?? "main";
     super({
       ...options,
@@ -84,7 +81,7 @@ export class PnpmMonorepoProject
       },
     });
 
-    this.workspaceTasksConcurrency = workspaceTasksConcurrency;
+    this.workspaceTasksConcurrency = options.workspaceTasksConcurrency;
 
     // engines
     this.package.addEngine("node", ">=18");
