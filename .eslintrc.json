@@ -179,7 +179,6 @@
         ".github/workflows/auto-approve.yml",
         ".github/workflows/build.yml",
         ".github/workflows/pull-request-lint.yml",
-        ".github/workflows/release.yml",
         ".gitignore",
         ".mergify.yml",
         ".npmignore",
@@ -190,7 +189,6 @@
         ".projen/files.json",
         ".projen/tasks.json",
         ".vscode/settings.json",
-        "jest.config.json",
         "LICENSE",
         "package.json",
         "tsconfig.dev.json",
@@ -200,6 +198,14 @@
       "rules": {
         "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/return-await": "off"
+      }
+    },
+    {
+      "files": [
+        "vitest.config.ts"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
       }
     },
     {

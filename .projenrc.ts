@@ -1,11 +1,13 @@
 import { NodePackageManager, NpmAccess } from "projen/lib/javascript";
 import { TypeScriptProject } from "projen/lib/typescript";
 import {
-  Recommended,
-  Organisational,
+  Changesets,
   CodeOfConduct,
   GitHubber,
   NpmReleaser,
+  Organisational,
+  Recommended,
+  Vitest,
 } from "./src";
 
 const gitHubber = new GitHubber({
@@ -68,15 +70,19 @@ const project = new TypeScriptProject({
   ],
   defaultReleaseBranch: "main",
   packageManager: NodePackageManager.PNPM,
-  pnpmVersion: "8",
+  pnpmVersion: "9",
   tsconfig: {
     compilerOptions: {
       esModuleInterop: true,
+      skipLibCheck: true,
     },
   },
+  release: false,
+  releaseToNpm: false,
+  workflowPackageCache: true,
+  workflowNodeVersion: "lts/*",
   projenrcTs: true,
   license: "Apache-2.0",
-  codeCov: true,
   docgen: true,
   eslintOptions: {
     dirs: ["."],
@@ -85,17 +91,7 @@ const project = new TypeScriptProject({
   dependabotOptions: {
     labels: ["auto-approve"],
   },
-  jestOptions: {
-    configFilePath: "jest.config.json",
-    jestConfig: {
-      coverageThreshold: {
-        branches: 95,
-        functions: 95,
-        lines: 95,
-        statements: 95,
-      },
-    },
-  },
+  jest: false,
   autoApproveUpgrades: true,
   autoApproveOptions: {
     allowedUsernames: ["dependabot[bot]"],
@@ -133,6 +129,10 @@ new Recommended(project, {
         filename: "code-of-conduct-text/contributor-covenant-2.1.md",
         words: ["socio-economic"],
       },
+      {
+        filename: [".projenrc.ts", "src/components/vitest.ts"],
+        words: ["vitest", "unannotate"],
+      },
     ],
   },
 });
@@ -142,8 +142,20 @@ npmReleaser.addToProject(project);
 
 new CodeOfConduct(project, { contactMethod: "tom@mountain-pass.com.au" });
 
+new Vitest(project, {
+  globals: true,
+  codeCovTokenSecret: "CODECOV_TOKEN",
+});
+new Changesets(project, {
+  prereleaseBranches: ["next"],
+  repo: `${gitHubber.options.username}/${gitHubber.options.name}`,
+  onlyUpdatePeerDependentsWhenOutOfRange: true,
+  npmProvenance: true,
+});
+
 project.addGitIgnore("/docs");
-project.package.addEngine("pnpm", ">=8 <9");
+project.package.addEngine("pnpm", ">=9 <10");
+project.package.addField("packageManager", "pnpm@9.15.4");
 // pnpm requires using hoisted node_modules when `bundledDependencies` are used
 // see here https://pnpm.io/next/npmrc#node-linker
 project.npmrc.addConfig("node-linker", "hoisted");

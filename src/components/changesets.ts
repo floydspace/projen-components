@@ -1,0 +1,263 @@
+import fs from "node:fs";
+import path from "node:path";
+
+import { Component, JsonFile, Project, github, javascript } from "projen";
+import { CSpell } from "./cspell";
+
+/**
+ * Options for configuring the Changesets component.
+ */
+export interface ChangesetsOptions {
+  /**
+   * The GitHub repository in "org/repo" format.
+   */
+  readonly repo: string;
+
+  /**
+   * The name of the main release branch.
+   *
+   * @default "main"
+   */
+  readonly defaultReleaseBranch?: string;
+
+  /**
+   * The name of the prerelease branches.
+   *
+   * @default - []
+   */
+  readonly prereleaseBranches?: string[];
+
+  /**
+   * Packages that should always be released together with the same version.
+   *
+   * @default - []
+   */
+  readonly fixed?: string[];
+
+  /**
+   * Packages that should be linked together so when they are being released, they will be released at the same version.
+   *
+   * @default - []
+   */
+  readonly linked?: string[];
+
+  /**
+   * If true, only update peer dependencies when they are out of range.
+   */
+  readonly onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
+
+  /**
+   * Should provenance statements be generated when the package is published.
+   *
+   * @see https://docs.npmjs.com/generating-provenance-statements
+   * @default - false
+   */
+  readonly npmProvenance?: boolean;
+}
+
+/**
+ * A component that integrates Changesets into a NodeProject.
+ */
+export class Changesets extends Component {
+  /**
+   * Retrieves the Changesets component from the given project, if it exists.
+   *
+   * @param project The project to search for the Changesets component.
+   * @returns The Changesets component, or undefined if it does not exist.
+   */
+  public static of(project: Project): Changesets | undefined {
+    const isChangesets = (o: Component): o is Changesets =>
+      o instanceof Changesets;
+    return project.components.find(isChangesets);
+  }
+
+  private readonly nodeProject: javascript.NodeProject;
+  private readonly releaseJob?: github.TaskWorkflowJob;
+
+  /**
+   * Creates an instance of the Changesets component.
+   *
+   * @param project The NodeProject to integrate with Changesets.
+   * @param options Configuration options for the Changesets component.
+   */
+  constructor(project: javascript.NodeProject, options: ChangesetsOptions) {
+    super(project);
+
+    this.nodeProject = project;
+
+    if (project.release) {
+      throw new Error(
+        "Cannot add the Changesets component to a project that already has a 'release' configuration."
+      );
+    }
+
+    const branchName = options.defaultReleaseBranch ?? "main";
+
+    // preserve the version number set by @changesets/cli
+    const prev = this.readProjectPackageJson(project) ?? {};
+    if (prev.version) {
+      project.package.addVersion(prev.version);
+    }
+
+    project.addDevDeps("@changesets/changelog-github", "@changesets/cli");
+
+    project.addTask("bump", {
+      description: "Bump package versions with changesets",
+      steps: [{ exec: "changeset version" }, { spawn: "install" }],
+    });
+
+    project.addTask("release", {
+      description: "Release with changesets",
+      exec: "changeset publish",
+    });
+
+    project.addTask("changeset", {
+      exec: "changeset",
+      receiveArgs: true,
+    });
+
+    new JsonFile(project, ".changeset/config.json", {
+      obj: {
+        $schema: "https://unpkg.com/@changesets/config@3.0.3/schema.json",
+        changelog: ["@changesets/changelog-github", { repo: options.repo }],
+        commit: false,
+        fixed: options.fixed ? [options.fixed] : [],
+        linked: options.linked ? [options.linked] : [],
+        access: "restricted",
+        baseBranch: branchName,
+        updateInternalDependencies: "patch",
+        ignore: [],
+        ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
+          ...(options.onlyUpdatePeerDependentsWhenOutOfRange
+            ? { onlyUpdatePeerDependentsWhenOutOfRange: true }
+            : {}),
+        },
+      },
+      omitEmpty: true,
+    });
+
+    project.addPackageIgnore("/.changeset/");
+
+    const ghProject = github.GitHub.of(project.root);
+    if (ghProject) {
+      const setupSteps = project.renderWorkflowSetup().map((step) => ({
+        ...step,
+        uses: step.uses?.replace(
+          "pnpm/action-setup@v3",
+          "pnpm/action-setup@v4"
+        ),
+      }));
+      const workflow = new github.GithubWorkflow(ghProject, "release", {
+        limitConcurrency: true,
+        concurrencyOptions: {
+          group: "${{ github.workflow }}-${{ github.ref_name }}",
+        },
+      });
+      workflow.on({
+        push: { branches: [branchName, ...(options.prereleaseBranches ?? [])] },
+        workflowDispatch: {}, // allow manual triggering
+      });
+      const job = new github.TaskWorkflowJob(this, this.project.buildTask, {
+        permissions: {
+          pullRequests: github.workflows.JobPermission.WRITE,
+          contents: github.workflows.JobPermission.WRITE,
+          idToken: options.npmProvenance
+            ? github.workflows.JobPermission.WRITE
+            : undefined,
+        },
+        checkoutWith: {
+          // fetch-depth= indicates all history for all branches and tags
+          // we must use this in order to fetch all tags
+          // and to inspect the history to decide if we should release
+          fetchDepth: 0,
+        },
+        preBuildSteps: setupSteps,
+        postBuildSteps: [
+          ...((project.buildWorkflow as any)?.postBuildSteps ?? []),
+          ...(options.prereleaseBranches?.length
+            ? [
+                {
+                  name: "Prepare Changeset",
+                  run: `npx projen changeset pre \${{ github.ref_name == '${branchName}' && 'exit' || format('{0} {1}', 'enter', github.ref_name) }} || echo 'swallow'`,
+                },
+              ]
+            : []),
+          {
+            name: "Create Release Pull Request or Publish",
+            uses: "changesets/action@v1",
+            with: {
+              version: "npx projen bump",
+              publish: "npx projen release",
+              commit: "chore(release): version packages",
+              setupGitUser: false, // we already set the git user in the setup steps
+            },
+            env: {
+              GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+              NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+              ...(options.npmProvenance
+                ? { NPM_CONFIG_PROVENANCE: "true" }
+                : {}),
+            },
+          },
+        ],
+      });
+      workflow.addJob("release", job);
+      this.releaseJob = job;
+    }
+  }
+
+  /**
+   * Pre-synthesize hook to preserve version numbers set by @changesets/cli.
+   */
+  preSynthesize(): void {
+    for (const component of this.project.components) {
+      if (component instanceof CSpell) {
+        component.addWords("prerelease");
+      }
+    }
+
+    // GitHub actions can handle either `packageManager` or `with.version` action config, but not both
+    if ("packageManager" in this.nodeProject.package.manifest) {
+      const steps = [
+        ...(this.releaseJob?.steps ?? []),
+        // @ts-ignore - `preBuildSteps` is private
+        ...(this.nodeProject.buildWorkflow?.preBuildSteps ?? []),
+      ];
+      steps.forEach((step) => {
+        if (step.uses?.startsWith("pnpm/action-setup")) {
+          delete step.with?.version;
+          if (JSON.stringify(step.with) === "{}") {
+            // @ts-ignore - `with` is readonly
+            delete step.with;
+          }
+        }
+      });
+    }
+
+    for (const subproject of this.nodeProject.subprojects) {
+      if (subproject instanceof javascript.NodeProject) {
+        // preserve the version number set by @changesets/cli
+        const prev = this.readProjectPackageJson(subproject) ?? {};
+        if (prev.version) {
+          subproject.package.addVersion(prev.version);
+        }
+      }
+    }
+  }
+
+  /**
+   * Reads the package.json file of the given NodeProject.
+   *
+   * @param project The NodeProject to read the package.json from.
+   * @returns The parsed package.json content, or undefined if the file does not exist.
+   */
+  private readProjectPackageJson(project: javascript.NodeProject) {
+    const file = path.join(project.outdir, "package.json");
+
+    if (!fs.existsSync(file)) {
+      return undefined;
+    }
+
+    return JSON.parse(fs.readFileSync(file, "utf-8"));
+  }
+}

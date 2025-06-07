@@ -23,11 +23,16 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2019"
+    "target": "ES2019",
+    "skipLibCheck": true,
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
+    "vitest.config.ts",
     ".projenrc.ts",
     "projenrc/**/*.ts"
   ],

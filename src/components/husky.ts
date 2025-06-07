@@ -110,12 +110,13 @@ export class Husky extends Component {
     super(project);
     this.options = resolve(project, options, Husky.defaultOptions);
     if (this.options.husky) {
-      project.addDevDeps("husky");
+      project.addDevDeps("husky", "is-ci");
       project.addTask("prepare", {
-        exec: "husky",
+        exec: "is-ci || husky",
         description: "installs husky",
       });
     }
+    project.addPackageIgnore("/.husky/");
   }
 
   /**

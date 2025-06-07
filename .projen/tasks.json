@@ -26,21 +26,24 @@
     },
     "bump": {
       "name": "bump",
-      "description": "Bumps version based on latest git tag and generates a changelog entry",
-      "env": {
-        "OUTFILE": "package.json",
-        "CHANGELOG": "dist/changelog.md",
-        "BUMPFILE": "dist/version.txt",
-        "RELEASETAG": "dist/releasetag.txt",
-        "RELEASE_TAG_PREFIX": "",
-        "BUMP_PACKAGE": "commit-and-tag-version@^12"
-      },
+      "description": "Bump package versions with changesets",
       "steps": [
         {
-          "builtin": "release/bump-version"
+          "exec": "changeset version"
+        },
+        {
+          "spawn": "install"
         }
-      ],
-      "condition": "git log --oneline -1 | grep -qv \"chore(release):\""
+      ]
+    },
+    "changeset": {
+      "name": "changeset",
+      "steps": [
+        {
+          "exec": "changeset",
+          "receiveArgs": true
+        }
+      ]
     },
     "clobber": {
       "name": "clobber",
@@ -180,31 +183,16 @@
       "description": "installs husky",
       "steps": [
         {
-          "exec": "husky"
+          "exec": "is-ci || husky"
         }
       ]
     },
     "release": {
       "name": "release",
-      "description": "Prepare a release from \"main\" branch",
-      "env": {
-        "RELEASE": "true"
-      },
+      "description": "Release with changesets",
       "steps": [
         {
-          "exec": "rm -fr dist"
-        },
-        {
-          "spawn": "bump"
-        },
-        {
-          "spawn": "build"
-        },
-        {
-          "spawn": "unbump"
-        },
-        {
-          "exec": "git diff --ignore-space-at-eol --exit-code"
+          "exec": "changeset publish"
         }
       ]
     },
@@ -222,7 +210,7 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "jest --passWithNoTests --updateSnapshot",
+          "exec": "vitest run --passWithNoTests --update",
           "receiveArgs": true
         },
         {
@@ -238,27 +226,10 @@
     },
     "test:watch": {
       "name": "test:watch",
-      "description": "Run jest in watch mode",
+      "description": "Run tests in watch mode",
       "steps": [
         {
-          "exec": "jest --watch"
-        }
-      ]
-    },
-    "unbump": {
-      "name": "unbump",
-      "description": "Restores version to 0.0.0",
-      "env": {
-        "OUTFILE": "package.json",
-        "CHANGELOG": "dist/changelog.md",
-        "BUMPFILE": "dist/version.txt",
-        "RELEASETAG": "dist/releasetag.txt",
-        "RELEASE_TAG_PREFIX": "",
-        "BUMP_PACKAGE": "commit-and-tag-version@^12"
-      },
-      "steps": [
-        {
-          "builtin": "release/reset-version"
+          "exec": "vitest --watch"
         }
       ]
     },

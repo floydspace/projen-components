@@ -7,3 +7,5 @@ shortlog
 unshallow
 deps
 eslintignore
+clazz
+godu

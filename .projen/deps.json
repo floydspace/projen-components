@@ -1,6 +1,14 @@
 {
   "dependencies": [
     {
+      "name": "@changesets/changelog-github",
+      "type": "build"
+    },
+    {
+      "name": "@changesets/cli",
+      "type": "build"
+    },
+    {
       "name": "@commitlint/cli",
       "type": "build"
     },
@@ -14,10 +22,6 @@
     },
     {
       "name": "@types/fs-extra",
-      "type": "build"
-    },
-    {
-      "name": "@types/jest",
       "type": "build"
     },
     {
@@ -44,8 +48,7 @@
       "type": "build"
     },
     {
-      "name": "commit-and-tag-version",
-      "version": "^12",
+      "name": "@vitest/coverage-v8",
       "type": "build"
     },
     {
@@ -95,12 +98,7 @@
       "type": "build"
     },
     {
-      "name": "jest",
-      "type": "build"
-    },
-    {
-      "name": "jest-junit",
-      "version": "^15",
+      "name": "is-ci",
       "type": "build"
     },
     {
@@ -109,10 +107,6 @@
     },
     {
       "name": "projen",
-      "type": "build"
-    },
-    {
-      "name": "ts-jest",
       "type": "build"
     },
     {
@@ -126,6 +120,10 @@
     {
       "name": "typescript",
       "version": "5.5.4",
+      "type": "build"
+    },
+    {
+      "name": "vitest",
       "type": "build"
     },
     {
