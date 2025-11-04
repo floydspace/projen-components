@@ -9,3 +9,5 @@ deps
 eslintignore
 clazz
 godu
+myconfig
+gotchas

@@ -42,6 +42,13 @@ export interface ChangesetsOptions {
   readonly linked?: string[];
 
   /**
+   * Packages that should be ignored by changesets.
+   *
+   * @default - []
+   */
+  readonly ignore?: string[];
+
+  /**
    * If true, only update peer dependencies when they are out of range.
    */
   readonly onlyUpdatePeerDependentsWhenOutOfRange?: boolean;
@@ -126,7 +133,7 @@ export class Changesets extends Component {
         access: "restricted",
         baseBranch: branchName,
         updateInternalDependencies: "patch",
-        ignore: [],
+        ignore: options.ignore ?? [],
         ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
           ...(options.onlyUpdatePeerDependentsWhenOutOfRange
             ? { onlyUpdatePeerDependentsWhenOutOfRange: true }
