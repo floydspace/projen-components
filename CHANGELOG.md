@@ -1,5 +1,11 @@
 # @floydspace/projen-components
 
+## 1.0.1
+
+### Patch Changes
+
+- [`68b8603`](https://github.com/floydspace/projen-components/commit/68b8603748a4d0f60cc49962bbf85b56970dc543) Thanks [@floydspace](https://github.com/floydspace)! - map ignore option in changesets component
+
 ## 1.0.0
 
 ### Major Changes
